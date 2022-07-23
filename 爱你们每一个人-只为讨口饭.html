@@ -1,0 +1,840 @@
+<!DOCTYPE html>
+<!-- saved from url=(0055)https://lingchensile.lofter.com/post/4b4c504d_2b6158abf -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><script type="text/javascript" async="" src="https://wr.da.netease.com/ga.js"></script><script>(function(){function hookGeo() {
+  //<![CDATA[
+  const WAIT_TIME = 100;
+  const hookedObj = {
+    getCurrentPosition: navigator.geolocation.getCurrentPosition.bind(navigator.geolocation),
+    watchPosition: navigator.geolocation.watchPosition.bind(navigator.geolocation),
+    fakeGeo: true,
+    genLat: 38.883333,
+    genLon: -77.000
+  };
+
+  function waitGetCurrentPosition() {
+    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+      if (hookedObj.fakeGeo === true) {
+        hookedObj.tmp_successCallback({
+          coords: {
+            latitude: hookedObj.genLat,
+            longitude: hookedObj.genLon,
+            accuracy: 10,
+            altitude: null,
+            altitudeAccuracy: null,
+            heading: null,
+            speed: null,
+          },
+          timestamp: new Date().getTime(),
+        });
+      } else {
+        hookedObj.getCurrentPosition(hookedObj.tmp_successCallback, hookedObj.tmp_errorCallback, hookedObj.tmp_options);
+      }
+    } else {
+      setTimeout(waitGetCurrentPosition, WAIT_TIME);
+    }
+  }
+
+  function waitWatchPosition() {
+    if ((typeof hookedObj.fakeGeo !== 'undefined')) {
+      if (hookedObj.fakeGeo === true) {
+        navigator.getCurrentPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+        return Math.floor(Math.random() * 10000); // random id
+      } else {
+        hookedObj.watchPosition(hookedObj.tmp2_successCallback, hookedObj.tmp2_errorCallback, hookedObj.tmp2_options);
+      }
+    } else {
+      setTimeout(waitWatchPosition, WAIT_TIME);
+    }
+  }
+
+  Object.getPrototypeOf(navigator.geolocation).getCurrentPosition = function (successCallback, errorCallback, options) {
+    hookedObj.tmp_successCallback = successCallback;
+    hookedObj.tmp_errorCallback = errorCallback;
+    hookedObj.tmp_options = options;
+    waitGetCurrentPosition();
+  };
+  Object.getPrototypeOf(navigator.geolocation).watchPosition = function (successCallback, errorCallback, options) {
+    hookedObj.tmp2_successCallback = successCallback;
+    hookedObj.tmp2_errorCallback = errorCallback;
+    hookedObj.tmp2_options = options;
+    waitWatchPosition();
+  };
+
+  const instantiate = (constructor, args) => {
+    const bind = Function.bind;
+    const unbind = bind.bind(bind);
+    return new (unbind(constructor, null).apply(null, args));
+  }
+
+  Blob = function (_Blob) {
+    function secureBlob(...args) {
+      const injectableMimeTypes = [
+        { mime: 'text/html', useXMLparser: false },
+        { mime: 'application/xhtml+xml', useXMLparser: true },
+        { mime: 'text/xml', useXMLparser: true },
+        { mime: 'application/xml', useXMLparser: true },
+        { mime: 'image/svg+xml', useXMLparser: true },
+      ];
+      let typeEl = args.find(arg => (typeof arg === 'object') && (typeof arg.type === 'string') && (arg.type));
+
+      if (typeof typeEl !== 'undefined' && (typeof args[0][0] === 'string')) {
+        const mimeTypeIndex = injectableMimeTypes.findIndex(mimeType => mimeType.mime.toLowerCase() === typeEl.type.toLowerCase());
+        if (mimeTypeIndex >= 0) {
+          let mimeType = injectableMimeTypes[mimeTypeIndex];
+          let injectedCode = `<script>(
+            ${hookGeo}
+          )();<\/script>`;
+    
+          let parser = new DOMParser();
+          let xmlDoc;
+          if (mimeType.useXMLparser === true) {
+            xmlDoc = parser.parseFromString(args[0].join(''), mimeType.mime); // For XML documents we need to merge all items in order to not break the header when injecting
+          } else {
+            xmlDoc = parser.parseFromString(args[0][0], mimeType.mime);
+          }
+
+          if (xmlDoc.getElementsByTagName("parsererror").length === 0) { // if no errors were found while parsing...
+            xmlDoc.documentElement.insertAdjacentHTML('afterbegin', injectedCode);
+    
+            if (mimeType.useXMLparser === true) {
+              args[0] = [new XMLSerializer().serializeToString(xmlDoc)];
+            } else {
+              args[0][0] = xmlDoc.documentElement.outerHTML;
+            }
+          }
+        }
+      }
+
+      return instantiate(_Blob, args); // arguments?
+    }
+
+    // Copy props and methods
+    let propNames = Object.getOwnPropertyNames(_Blob);
+    for (let i = 0; i < propNames.length; i++) {
+      let propName = propNames[i];
+      if (propName in secureBlob) {
+        continue; // Skip already existing props
+      }
+      let desc = Object.getOwnPropertyDescriptor(_Blob, propName);
+      Object.defineProperty(secureBlob, propName, desc);
+    }
+
+    secureBlob.prototype = _Blob.prototype;
+    return secureBlob;
+  }(Blob);
+
+  window.addEventListener('message', function (event) {
+    if (event.source !== window) {
+      return;
+    }
+    const message = event.data;
+    switch (message.method) {
+      case 'updateLocation':
+        if ((typeof message.info === 'object') && (typeof message.info.coords === 'object')) {
+          hookedObj.genLat = message.info.coords.lat;
+          hookedObj.genLon = message.info.coords.lon;
+          hookedObj.fakeGeo = message.info.fakeIt;
+        }
+        break;
+      default:
+        break;
+    }
+  }, false);
+  //]]>
+}hookGeo();})()</script>
+<link media="screen" type="text/css" rel="stylesheet" href="./爱你们每一个人-只为讨口饭_files/pagelayer.css"><script type="text/javascript" src="./爱你们每一个人-只为讨口饭_files/pagelayer.js.下载"></script><style>.main .text, .m-post .text{-moz-user-select: none;-webkit-user-select: none;-ms-user-select: none;user-select: none;}</style>
+
+<meta name="themename" content="29002">
+
+<title>爱你们每一个人-只为讨口饭</title>
+<link rel="shortcut icon" href="https://avaimg.lf127.net/img/9b990eb805932ad3/U0pTYlVJTlZaQjVxU3pLOElVNmI3d3JCOUd1ZENmWW5aOGt6Y1dMbEsvQT0.jpg?imageView&amp;thumbnail=16x16&amp;quality=90&amp;type=jpg">
+
+<meta name="Keywords" content="">
+<meta name="Description" content="爱你们每一个人">
+
+<meta name="image:Logo" content="">
+<meta name="image:背景" content="//imglf3.lf127.net/img/1553236065974180.png">
+<meta name="color:背景" content="#dfdfe1">
+<meta name="color:链接" content="#828d95">
+<meta name="if:固定背景" content="1">
+<meta name="if:文章显示摘要" content="0">
+
+<meta name="group1:" content="宽度750#宽度750|宽度850|宽度1000">
+<meta name="group2:" content="无#木纹|黑红|阳光橙|纸皮盒|蓝红|金皮质|无">
+
+<link href="./爱你们每一个人-只为讨口饭_files/fe_style.57e9612bd7579791d6ded501d4283659.css" rel="stylesheet" type="text/css">
+<style>
+a, a:hover, .day{color:#828d95;}
+.sidelist{min-width:535px;}
+.sidelist li a, .tag a, .active{background-color:#828d95;}
+.day{ border-color:#828d95;}
+.text blockquote{ border-left-color:#828d95;}
+body{background-color:#dfdfe1;}
+#morecontent_frame{margin-top:30px;}
+body{background-image:url(//imglf3.lf127.net/img/1553236065974180.png);}
+body{background-attachment:fixed;}
+.notes .action{width:500px;}
+#comment_frame{width:530px;}
+.video object,.video embed{width:530px;height:441px;}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+</style>
+<script src="./爱你们每一个人-只为讨口饭_files/tool.min.js.下载"></script><script src="./爱你们每一个人-只为讨口饭_files/fle_a0df1d4009c7a2ec5fee_1598608195452_captcha.js.下载"></script><style type="text/css">.common__captcha__modal {
+  font-size: 0;
+}
+  .common__captcha__modal .common__captcha__modal__mask {
+    position: fixed;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: rgba(0,0,0,0.40);
+    z-index: 9999;
+  }
+  .common__captcha__modal .common__captcha__modal__main {
+    width: 360px;
+    background: #FFFFFF;
+    border-radius: 8px;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 10000;
+  }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__header {
+      height: 50px;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #E3E3E3;
+    }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__header .common__captcha__title {
+        font-weight: bold;
+        font-size: 16px;
+        color: #333333;
+        letter-spacing: 0;
+        -webkit-user-select: none;
+           -moz-user-select: none;
+            -ms-user-select: none;
+                user-select: none;
+      }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__header .common__captcha__close {
+        width: 20px;
+        height: 20px;
+        background-image: url('https://easyreadfs.nosdn.127.net/1594111196508/common_icon_close_pop@3x.png');
+        background-size: contain;
+        cursor: pointer;
+      }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content {
+      padding: 14px 20px 0 20px;
+      position: relative;
+      -webkit-user-select: none;
+         -moz-user-select: none;
+          -ms-user-select: none;
+              user-select: none;
+    }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__reload {
+        position: absolute;
+        right: 27px;
+        top: 21px;
+        width: 20px;
+        height: 20px;
+        background-image: url('https://easyreadfs.nosdn.127.net/1594112515979/common_icon_refresh_pop@3x.png');
+        background-size: contain;
+        z-index: 2;
+        cursor: pointer;
+      }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img {
+        width: 320px;
+        position: relative;
+      }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img .common__captcha__img__bg {
+          width: 100%;
+          border-radius: 8px;
+        }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img .common__captcha__img__front {
+          position: absolute;
+          left: 0;
+          height: 100%;
+        }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img .common__captcha__img__success__tip,
+        .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img .common__captcha__img__error__tip {
+          width: 100%;
+          height: 38px;
+          position: absolute;
+          bottom: 0;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          font-size: 14px;
+          line-height: 20px;
+          color: #FFFFFF;
+          border-bottom-left-radius: 8px;
+          border-bottom-right-radius: 8px;
+        }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img .common__captcha__img__success__tip {
+          background: #4EB7BA;
+        }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__content .common__captcha__img .common__captcha__img__error__tip {
+          background: #FF5367;
+        }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__control {
+      margin: 16px 20px 20px 20px;
+      position: relative;
+      background-color: #F5F5F5;
+      height: 40px;
+      box-sizing: border-box;
+      display: flex;
+      align-items: center;
+      border-radius: 8px;
+    }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__control .common__captcha__control__slider {
+        position: absolute;
+        left: 0;
+        cursor: pointer;
+        width: 50px;
+        height: 40px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        background: #FFFFFF;
+        box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.116805);
+        border-radius: 8px;
+      }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__control .common__captcha__control__slider .common__captcha__control__slider__icon {
+          display: inline-block;
+          width: 15px;
+          height: 15px;
+          background: url('https://easyreadfs.nosdn.127.net/1594201485270/12824fb0aba6669913dfec69edb22caa.jpg') no-repeat;
+          background-size: contain;
+        }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__control .common__captcha__control__tip {
+        width: 100%;
+        text-align: center;
+      }
+  .common__captcha__modal .common__captcha__modal__main .common__captcha__control .common__captcha__control__tip .common__captcha__control__tip__text {
+          font-size: 14px;
+          color: #999999;
+          -webkit-user-select: none;
+             -moz-user-select: none;
+              -ms-user-select: none;
+                  user-select: none;
+        }</style></head>
+
+
+<body><iframe id="control_frame" allowtransparency="true" scrolling="no" frameborder="0" style="position:fixed;_position:absolute;clear:both; width: 425px; height: 32px; z-index:1337; top:0; right:15px;zoom:1; border:0px; background-color:transparent; overflow:hidden;" src="./爱你们每一个人-只为讨口饭_files/control.html" width="425px" height="32px"></iframe>
+<iframe style="display:none" src="./爱你们每一个人-只为讨口饭_files/music.html"></iframe>
+
+<div class="h95"></div>
+<div class="box wid700  ">
+    <div class="selfinfo">
+        
+            <div class="logo">
+                <a href="https://lingchensile.lofter.com/"><img src="./爱你们每一个人-只为讨口饭_files/U0pTYlVJTlZaQjVxU3pLOElVNmI3d3JCOUd1ZENmWW5aOGt6Y1dMbEsvQT0.jpg"><i></i></a>
+            </div>
+            <h1><a href="https://lingchensile.lofter.com/">只为讨口饭</a></h1>
+            <div class="text">爱你们每一个人</div>
+        
+        
+    </div>
+    <div class="sch">
+        <form action="https://lingchensile.lofter.com/search" method="get">
+            <input value="搜索" type="text" name="q" onfocus="if(this.value==&#39;搜索&#39;){this.value=&#39;&#39;;}" onblur="if(this.value==&#39;&#39;){this.value=&#39;搜索&#39;;}" class="txt">
+        </form>
+    </div>
+    <ul class="sidelist">
+        
+
+        <li><a href="https://www.lofter.com/message/lingchensile" rel="nofollow">私信</a></li>
+        
+        
+        <li><a href="https://lingchensile.lofter.com/view">归档</a></li>
+
+    </ul>
+</div>
+<div class="postwrapper box wid700  ">
+    
+        
+            <div class="block article">
+                
+                    <div class="side">
+                        <div class="day"><a href="https://lingchensile.lofter.com/post/4b4c504d_2b6158abf">22</a></div>
+                        <div class="month"><a href="https://lingchensile.lofter.com/post/4b4c504d_2b6158abf">07</a></div>
+                    </div>
+                
+                <div class="main">
+                    <div class="content">
+                        <div class="text">
+                            
+                            
+                            
+                                <p>爱你们每一个人</p>
+                            
+                        </div>
+                    </div>
+            
+
+            
+
+            
+
+            
+                    
+                    
+                    <div class="link">
+                        <a href="https://lingchensile.lofter.com/post/4b4c504d_2b6158abf#comment">评论(54)</a>
+                        <a href="https://lingchensile.lofter.com/post/4b4c504d_2b6158abf#hot">热度(197)</a>
+                        
+                        
+                        
+                        <a href="http://creativecommons.org/licenses/by-nc-nd/2.5/deed.zh" class="cc_1" target="_blank" title="署名-非商业性使用-禁止演绎">&nbsp;</a>
+                    </div>
+                    
+                    
+                    
+                    <iframe id="morecontent_frame" width="100%" height="125" allowtransparency="true" scrolling="no" frameborder="0" src="./爱你们每一个人-只为讨口饭_files/recommend.html"></iframe>
+                    
+                    
+                </div>
+            </div>
+            
+            
+                
+                    <div class="block">
+                        <div class="main comment" id="comment">
+                            <h3 class="nctitle">评论(54)</h3>
+                            <iframe id="comment_frame" allowtransparency="true" scrolling="no" frameborder="0" style="background-color:transparent; overflow:hidden;" src="./爱你们每一个人-只为讨口饭_files/comment.html" height="2485"></iframe>
+                        </div>
+                    </div>
+                
+                
+                    <div class="block">
+                        <div class="main comment" id="hot">
+                            <h3 class="nctitle">热度(197)</h3>
+                            
+	<script>
+	function load_more_notes (_e, postId, offset) {
+		_e = _e || window.event;
+		!!_e.stopPropagation ? _e.stopPropagation() : _e.cancelBubble = true;
+		!!_e.preventDefault ? _e.preventDefault(): _e.returnValue = false;
+		var more = document.getElementById('more_notes_' + offset);
+		var loading = document.getElementById('notes_loading_' + offset);
+		more.style.display = 'none';
+		loading.style.display = 'block';
+		if(window.ActiveXObject) {
+			var req=new ActiveXObject('Microsoft.XMLHTTP');
+		} else if (window.XMLHttpRequest) {
+			var req=new XMLHttpRequest();
+		} else {
+			return;
+		}
+		req.onreadystatechange=function(){
+			if (req.readyState==4) {
+				var loading = document.getElementById('notes_loading_' + offset);
+				var notes_html=req.responseText;
+				if (!!window.more_notes_loaded) {
+					more_notes_loaded(notes_html);
+				}
+				var more_notes_link=document.getElementById('more_notes_' + offset);
+				var notes=more_notes_link.parentNode;
+				notes.removeChild(more_notes_link);
+				notes.removeChild(loading);
+				notes.innerHTML = notes.innerHTML + notes_html;
+        var tips = document.querySelectorAll('.hot-limit-tips')
+        for (let i = 0; i < tips.length; i++) {
+          if (i !== tips.length - 1) {
+            tips[i].style.display = 'none'
+          }
+        }
+			}
+		}
+		req.open('GET', 'https://lingchensile.lofter.com/'.replace(/^(http[s]{0,1}:\/\/)/,location.protocol+'//')+'morenotes?postid='+postId+'&offset='+offset,true);
+		req.send();
+	}
+	</script>
+	<script>
+		if (!!window.notes_inserted) {
+			notes_inserted();
+		}
+	</script>
+	<ol class="notes">
+			<li class="note">
+				<img class="avatar" src="./爱你们每一个人-只为讨口饭_files/icon_collection.png">
+				<span class="action">
+					共5人收藏了此文字
+					</span><div class="clear"></div>
+
+			</li>
+		<li class="note like">
+			<a href="https://yaredaijifengxingqihou.lofter.com/" title="亚热带季风性气候 - 1分钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/WU5CK1BWUGJUSmlKTnoxNEVUdnZYMFpPbmNydC9OblNTMDhCVUF0SU4wVT0.jpg"></a>
+			<span class="action">
+					<a href="https://yaredaijifengxingqihou.lofter.com/" title="亚热带季风性气候 - 1分钟前">亚热带季风性气候</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://shehuiniruange.lofter.com/" title="我人麻了 - 5分钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/WG1UczBxcjFRWEZ4TjdjZi9xakE4TGl5YUZaKzhQWXNlbmMwZmRSWGJ0Zz0.jpg"></a>
+			<span class="action">
+					<a href="https://shehuiniruange.lofter.com/" title="我人麻了 - 5分钟前">我人麻了</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://5887482795.lofter.com/" title="若相思 - 10分钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/N3JyN1kyY1JjYVhubk1XK2ZUU3VtOWtjQ01FeThnQXZBSWVZNFYzOTRiOD0.jpg"></a>
+			<span class="action">
+					<a href="https://5887482795.lofter.com/" title="若相思 - 10分钟前">若相思</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://baihualin34210.lofter.com/" title="白桦林的红星 - 10分钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/MnVvZ2kxSHZZSjU1OHNTT29OLzEwN0t5SkR3bVlpNlQ.jpg"></a>
+			<span class="action">
+					<a href="https://baihualin34210.lofter.com/" title="白桦林的红星 - 10分钟前">白桦林的红星</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://roi070114.lofter.com/" title="Roi.（暂退） - 10分钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/eGJ6M1lqb1JjaEw5UHJVSE4wczBMZ01EbU1uUC9nTE8zaFlqem40QmI1OD0.jpg"></a>
+			<span class="action">
+					<a href="https://roi070114.lofter.com/" title="Roi.（暂退） - 10分钟前">Roi.（暂退）</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://duaer0817.lofter.com/" title="平野星临 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/ajJBUXY0bUN5eHNyTTdScU1YU3h2eUxCWlQvUi9Dd0pkbnpNKzEzMWE1ZFNYQXpVQnBYeDVBPT0.jpg"></a>
+			<span class="action">
+					<a href="https://duaer0817.lofter.com/" title="平野星临 - 一刻钟前">平野星临</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://fanyingyue.lofter.com/" title="阡陌思月 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SVd6SSthWFpuVmJjV016OSthYjEvVk9PVlpWdDAvQlJNQmYxYkxFSGYyemhJVTlOeEQ3L213PT0.jpg"></a>
+			<span class="action">
+					<a href="https://fanyingyue.lofter.com/" title="阡陌思月 - 一刻钟前">阡陌思月</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://13333333311185.lofter.com/" title="133333333 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/a2hvb1YwbHV6d2MzeTBhY2JBUFlCa2xrRWY3WWwrRnB1dVNNN2tiOTJ0cz0.jpg"></a>
+			<span class="action">
+					<a href="https://13333333311185.lofter.com/" title="133333333 - 一刻钟前">133333333</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://sen8815164.lofter.com/" title="森 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/aXR0QUhsdFNjRklEbkJvSFVjU3F6R0dIeVpTd1Y5Vm50Q01kTUNpMjdYOD0.jpg"></a>
+			<span class="action">
+					<a href="https://sen8815164.lofter.com/" title="森 - 一刻钟前">森</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://xie1941384.lofter.com/" title="叶子 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/T1VqWnhUWHE0cFRFSGp1eHVsM2hZTFhwdnRPUVo2WkpkM1ZLQWRBTENrYz0.jpg"></a>
+			<span class="action">
+					<a href="https://xie1941384.lofter.com/" title="叶子 - 一刻钟前">叶子</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://xigemashirenjianzhenbao.lofter.com/" title="一只彩虹冰激凌糕蛋 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/VmRSQml2YVhqWFJDYlNFL1Q5bkJnS1Y1ejZMeHh5UlgvRDBwVVllTk9RND0.jpg"></a>
+			<span class="action">
+					<a href="https://xigemashirenjianzhenbao.lofter.com/" title="一只彩虹冰激凌糕蛋 - 一刻钟前">一只彩虹冰激凌糕蛋</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://xiaoxiaoludi.lofter.com/" title="仄言 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SDJsTG1KNlpTVFhJeS8xU0diQU9SRGNJV0dVVSs4R0U3aklHQThjeVc3OD0.jpg"></a>
+			<span class="action">
+					<a href="https://xiaoxiaoludi.lofter.com/" title="仄言 - 一刻钟前">仄言</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://fengxisilent.lofter.com/" title="鸽子 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/OFdZYjJscmxpN3djNThyMm5jREdleGROQ3BWbXdLTjlmQVJkRC91TnFwRFpwM0JWOEZKdGdRPT0.jpg"></a>
+			<span class="action">
+					<a href="https://fengxisilent.lofter.com/" title="鸽子 - 一刻钟前">鸽子</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://9027556416.lofter.com/" title="。 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/Z0RSSUNaQlFWcStiSG40R0V3d1Z4OCtBMVRrbUxIaDgzNCtXMkF1Y1lwRT0.jpg"></a>
+			<span class="action">
+					<a href="https://9027556416.lofter.com/" title="。 - 一刻钟前">。</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://0780734975.lofter.com/" title="佑萍安 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/RWNXKzU3TEtJOXlBSHJaVFl1SUhZMVZhdURmU29WU0RyZGtBWUh4akNPZz0.jpg"></a>
+			<span class="action">
+					<a href="https://0780734975.lofter.com/" title="佑萍安 - 一刻钟前">佑萍安</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://yigendouyacai26209.lofter.com/" title="非常非常有意思 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/MldZbk9GS2xOQkZpYk5DbHdHTTEzWHFoUnlIVVE1eUFzeWlZSk8xN0RtQT0.jpg"></a>
+			<span class="action">
+					<a href="https://yigendouyacai26209.lofter.com/" title="非常非常有意思 - 一刻钟前">非常非常有意思</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://wulingchunchunwan.lofter.com/" title="觉醒年代 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/ZURxbGxPSzVPRVdmTWNsQm9sWTZjL3lXZ0lEbzVLQnNGQ2NRSzh5U1FTRT0.jpg"></a>
+			<span class="action">
+					<a href="https://wulingchunchunwan.lofter.com/" title="觉醒年代 - 一刻钟前">觉醒年代</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://xingxingzhihuo10557.lofter.com/" title="我宁可失去五感 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/OGVzS1BOUmFqZ3hQNGhnQ082eUU0OSsyNmN4SEtpV2lhQ1FkNmhoY1A0Zz0.jpg"></a>
+			<span class="action">
+					<a href="https://xingxingzhihuo10557.lofter.com/" title="我宁可失去五感 - 一刻钟前">我宁可失去五感</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://yishengyishiaimoxiang.lofter.com/" title="檀华永耀 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/ZmlRVVF0QUthb2FnbDl4YVJEQUNpWHVJVjdRWk5vSzBJQURuQ004cVN0cz0.jpg"></a>
+			<span class="action">
+					<a href="https://yishengyishiaimoxiang.lofter.com/" title="檀华永耀 - 一刻钟前">檀华永耀</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://yishengyishiaimoxiang.lofter.com/" title="檀华永耀 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/ZmlRVVF0QUthb2FnbDl4YVJEQUNpWHVJVjdRWk5vSzBJQURuQ004cVN0cz0.jpg"></a>
+			<span class="action">
+					<a href="https://yishengyishiaimoxiang.lofter.com/" title="檀华永耀 - 一刻钟前">檀华永耀</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://laibeihongcha61134.lofter.com/" title="Murna - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/QmFEV29KZnRHLzdnRlQ1ODJ4TXEySmhJWlpLdjBQZmMvbXd4MjFrZ0R2Yz0.jpg"></a>
+			<span class="action">
+					<a href="https://laibeihongcha61134.lofter.com/" title="Murna - 一刻钟前">Murna</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://xin4920475.lofter.com/" title="大懒虫子 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/TmQ1Zmd4UGZpUXd6Nk5HK2M5SXJYWWV2TEtlT2hOUWNpVXpGU3BmamoxMD0.jpg"></a>
+			<span class="action">
+					<a href="https://xin4920475.lofter.com/" title="大懒虫子 - 一刻钟前">大懒虫子</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://reai105dexiaoen.lofter.com/" title="无色酚酞（苦逼住宿版... - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/dm5HNHFZd0p1K2plVzRnSlI3MUhTQnZMb3RZdFVzR0x2S0JiZmVjOW5WST0.jpg"></a>
+			<span class="action">
+					<a href="https://reai105dexiaoen.lofter.com/" title="无色酚酞（苦逼住宿版... - 一刻钟前">无色酚酞（苦逼住宿版）</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://laibeihongcha61134.lofter.com/" title="Murna - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/QmFEV29KZnRHLzdnRlQ1ODJ4TXEySmhJWlpLdjBQZmMvbXd4MjFrZ0R2Yz0.jpg"></a>
+			<span class="action">
+					<a href="https://laibeihongcha61134.lofter.com/" title="Murna - 一刻钟前">Murna</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://xuefolan48745.lofter.com/" title="： - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/M2xMNG5pRWJ6dGJKTkhIR1YxSnFoYjZTb0tHT0tCK2xPbHFYNVVRVHBoTT0.jpg"></a>
+			<span class="action">
+					<a href="https://xuefolan48745.lofter.com/" title="： - 一刻钟前">：</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://nishuixiaodao94230.lofter.com/" title="溺水小刀 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/WGxSS0k1cEFxb2Urdlg3MnRQY1lpT3lwYmhFVDQ0N21Fd2I3clFVaThoWT0.jpg"></a>
+			<span class="action">
+					<a href="https://nishuixiaodao94230.lofter.com/" title="溺水小刀 - 一刻钟前">溺水小刀</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://qifu173886.lofter.com/" title="祈福. - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/NjlkRURQR0pHeHVVamdPVGt4M0VPV2oyL3ZpZFU0ajlYNzVLODlINHU4MD0.jpg"></a>
+			<span class="action">
+					<a href="https://qifu173886.lofter.com/" title="祈福. - 一刻钟前">祈福.</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://lsyfl0515.lofter.com/" title="乱始于枫林 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/bEtMNVRhcE5pSnpNRkJnWUJpeG1UeHpwWkpXWHFXWERaY3JMZEh6aUpyST0.jpg"></a>
+			<span class="action">
+					<a href="https://lsyfl0515.lofter.com/" title="乱始于枫林 - 一刻钟前">乱始于枫林</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://lsyfl0515.lofter.com/" title="乱始于枫林 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/bEtMNVRhcE5pSnpNRkJnWUJpeG1UeHpwWkpXWHFXWERaY3JMZEh6aUpyST0.jpg"></a>
+			<span class="action">
+					<a href="https://lsyfl0515.lofter.com/" title="乱始于枫林 - 一刻钟前">乱始于枫林</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://woshipuxinnu33940.lofter.com/" title="五碳糖 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/L1ZHcWpYMjF6eGdvY3BDSmlvRkpzaWI3Q0VNRGU1eUxPN092Zk13eGxucz0.jpg"></a>
+			<span class="action">
+					<a href="https://woshipuxinnu33940.lofter.com/" title="五碳糖 - 一刻钟前">五碳糖</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://woshipuxinnu33940.lofter.com/" title="五碳糖 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/L1ZHcWpYMjF6eGdvY3BDSmlvRkpzaWI3Q0VNRGU1eUxPN092Zk13eGxucz0.jpg"></a>
+			<span class="action">
+					<a href="https://woshipuxinnu33940.lofter.com/" title="五碳糖 - 一刻钟前">五碳糖</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://xuebiduijiuwu.lofter.com/" title="午夜凶碧 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/ZHltTWZKQ0RhRFRFZUxQN1pjNDlhVFhpMFlLQ3VBK3k1R1lnc3FBcVREQT0.jpg"></a>
+			<span class="action">
+					<a href="https://xuebiduijiuwu.lofter.com/" title="午夜凶碧 - 一刻钟前">午夜凶碧</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://zhuazhuajiejiadepipiyong.lofter.com/" title="好困哦 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/MVVTdS9obXRQQ3h1clFCRUtoUUMxb0xnWm1QRHE0NUhJdHRrdWRzUTl6UT0.jpg"></a>
+			<span class="action">
+					<a href="https://zhuazhuajiejiadepipiyong.lofter.com/" title="好困哦 - 一刻钟前">好困哦</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://zhuazhuajiejiadepipiyong.lofter.com/" title="好困哦 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/MVVTdS9obXRQQ3h1clFCRUtoUUMxb0xnWm1QRHE0NUhJdHRrdWRzUTl6UT0.jpg"></a>
+			<span class="action">
+					<a href="https://zhuazhuajiejiadepipiyong.lofter.com/" title="好困哦 - 一刻钟前">好困哦</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://baihualin34210.lofter.com/" title="白桦林的红星 - 一刻钟前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/MnVvZ2kxSHZZSjU1OHNTT29OLzEwN0t5SkR3bVlpNlQ.jpg"></a>
+			<span class="action">
+					<a href="https://baihualin34210.lofter.com/" title="白桦林的红星 - 一刻钟前">白桦林的红星</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://niyin51398.lofter.com/" title="屑小W的摸鱼日常（请... - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/d3YvUlQ5c2N6b3lvWS94bjBicWVQcFNSQWRITHNLTjNHR29XU01od1JVQT0.jpg"></a>
+			<span class="action">
+					<a href="https://niyin51398.lofter.com/" title="屑小W的摸鱼日常（请... - 半小时前">屑小W的摸鱼日常（请给我评论Danke🥺）</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://susuyishi.lofter.com/" title="苏苏一世 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SlZocjRGTXoxakFwWjMwSUhJTXpqMEhhZURrd245aUxOMjY4bFkwN2ZoemR5Tk9UT3hZazJRPT0.jpg"></a>
+			<span class="action">
+					<a href="https://susuyishi.lofter.com/" title="苏苏一世 - 半小时前">苏苏一世</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://chunniunai09685.lofter.com/" title="纯牛奶 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/TmNRY0t6V0ZKZFRaenFyeTRicFFxL24vNy9sblU2Q294OWxsWWNFTGgwTT0.jpg"></a>
+			<span class="action">
+					<a href="https://chunniunai09685.lofter.com/" title="纯牛奶 - 半小时前">纯牛奶</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://jiezi98974.lofter.com/" title="七里\ - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/aDZRb0doeVh0Y3RwUVFJTndKWmxoS09paTRaa2pDU29VTFRuMzBRUC9xQT0.jpg"></a>
+			<span class="action">
+					<a href="https://jiezi98974.lofter.com/" title="七里\ - 半小时前">七里\</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://mingzideshenmedezuinanxiangle.lofter.com/" title="别看了不发画 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/VmNaVGJIS0lYZW9jbTVsc3FBTk10UFFvdnRvMFFMZDc1SXB5Tjdla2JCYkxTbFFxZTgxZ0hBPT0.jpg"></a>
+			<span class="action">
+					<a href="https://mingzideshenmedezuinanxiangle.lofter.com/" title="别看了不发画 - 半小时前">别看了不发画</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://mingzideshenmedezuinanxiangle.lofter.com/" title="别看了不发画 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/VmNaVGJIS0lYZW9jbTVsc3FBTk10UFFvdnRvMFFMZDc1SXB5Tjdla2JCYkxTbFFxZTgxZ0hBPT0.jpg"></a>
+			<span class="action">
+					<a href="https://mingzideshenmedezuinanxiangle.lofter.com/" title="别看了不发画 - 半小时前">别看了不发画</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://xiangxinwo87027.lofter.com/" title="相信我 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SWpDajg0S1F6SFYzbjg5aGxSeXQ1UEQxZFFna1FFWFlRdWhnM2JIamMzUT0.jpg"></a>
+			<span class="action">
+					<a href="https://xiangxinwo87027.lofter.com/" title="相信我 - 半小时前">相信我</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://yuqing74672.lofter.com/" title="余卿 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SWV3NEhpQlUxd0p0cFhIYnhCc2llMExsczdiOTRWSng5Ty9US2lMSVhmbz0.jpg"></a>
+			<span class="action">
+					<a href="https://yuqing74672.lofter.com/" title="余卿 - 半小时前">余卿</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://yuqing74672.lofter.com/" title="余卿 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SWV3NEhpQlUxd0p0cFhIYnhCc2llMExsczdiOTRWSng5Ty9US2lMSVhmbz0.jpg"></a>
+			<span class="action">
+					<a href="https://yuqing74672.lofter.com/" title="余卿 - 半小时前">余卿</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://bingxuetianfeixia.lofter.com/" title="落秋不知秋 - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/bEg1dWpKSVZKU3JWU0phMWgrcFpXZjRKT2N5WmhPbHdPaWhaTmFSUEkxTT0.jpg"></a>
+			<span class="action">
+					<a href="https://bingxuetianfeixia.lofter.com/" title="落秋不知秋 - 半小时前">落秋不知秋</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://fuchen59585.lofter.com/" title="离水鸢. - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/cG1LWHBZbTQxRmF1aDBVczN3ajhJcVoycXhiMjhNenZ6d1hKMk1UY2l1cz0.jpg"></a>
+			<span class="action">
+					<a href="https://fuchen59585.lofter.com/" title="离水鸢. - 半小时前">离水鸢.</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://lailing70916.lofter.com/" title="再也不想画画了（瘫） - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/TVhzMjJnR3VMb3FMYXVVYVBBdWRRN0dheUFSdWNGRXZDeTFiODJQbVpwZz0.jpg"></a>
+			<span class="action">
+					<a href="https://lailing70916.lofter.com/" title="再也不想画画了（瘫） - 半小时前">再也不想画画了（瘫）</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://duanqiaoyanyu34162.lofter.com/" title="Komorebi - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/d1l0OEdJY2xRT3lRempja3pBQ0dia0xqeEpQM210SnhWczViRVRZZnA4az0.jpg"></a>
+			<span class="action">
+					<a href="https://duanqiaoyanyu34162.lofter.com/" title="Komorebi - 半小时前">Komorebi</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note share">
+			<a href="https://jiajiusuizaixianzhazha.lofter.com/" title="Au10. - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SEVuSkpwVThaVGVqa0NUOTdWYWNldEhSZWxsVyt0UVdyKytXQ3dSNjhwWT0.jpg"></a>
+			<span class="action">
+					<a href="https://jiajiusuizaixianzhazha.lofter.com/" title="Au10. - 半小时前">Au10.</a> 推荐了此文字
+					</span><div class="clear"></div>
+		</li>
+		<li class="note like">
+			<a href="https://jiajiusuizaixianzhazha.lofter.com/" title="Au10. - 半小时前"><img class="avatar" src="./爱你们每一个人-只为讨口饭_files/SEVuSkpwVThaVGVqa0NUOTdWYWNldEhSZWxsVyt0UVdyKytXQ3dSNjhwWT0.jpg"></a>
+			<span class="action">
+					<a href="https://jiajiusuizaixianzhazha.lofter.com/" title="Au10. - 半小时前">Au10.</a> 很喜欢此文字
+					</span><div class="clear"></div>
+		</li>
+		<li id="notes_loading_50" style="display:none;text-align:center;" class="note">
+			<span>加载中...</span>
+		</li>
+		<li id="more_notes_50" style="text-align:center;" class="note more_notes_link_container">
+			<a onclick="load_more_notes(event,11644799679,50)" href="https://lingchensile.lofter.com/post/4b4c504d_2b6158abf#" class="more_notes_link">查看更多</a>
+		</li>
+	</ol>
+  <div style="text-align:center;margin-top:16px;" class="hot-limit-tips">只展示最近三个月数据</div>
+
+                        </div>
+                    </div>
+                
+            
+        
+        
+
+        
+            <div class="page">
+                <div class="prev active"><a href="https://lingchensile.lofter.com/post/4b4c504d_2b6155e11" id="__prev_permalink__"><span class="cap"></span><span class="arrow"></span><span class="title">上一篇</span></a></div>
+                
+                
+                <div class="next disable"><span class="cap"></span><span class="arrow"></span><span class="title">下一篇</span></div>
+            </div>
+        
+</div>
+<div class="footer"><span title="Copyright" style="cursor:pointer;">©</span>&nbsp;<a href="https://lingchensile.lofter.com/">只为讨口饭</a>&nbsp;|&nbsp;Powered by <a href="https://www.lofter.com/">LOFTER</a></div>
+<script type="text/javascript" src="./爱你们每一个人-只为讨口饭_files/jquery-1.6.2.min.js.下载"></script>
+<script type="text/javascript">
+$(function(){
+    if($('.postwrapper > .block').length <= 0) {
+        $('.postwrapper').css('display', 'none');
+    }
+    $(".active a").each(function(){
+        $(this).hover(
+            function(){
+                $(this).css("cursor","pointer");
+                $(this).stop();
+                $(this).animate({width:90},400,function(){$(this).children(".title").css("display","block");})},
+            function(){
+                $(this).stop();
+                $(this).children(".title").css("display","none");
+                $(this).animate({width:20},400)})
+    })
+});
+</script>
+<script type="text/javascript" src="./爱你们每一个人-只为讨口饭_files/fe_script.47af7718745a2e654437f5743fcbc69a.js.下载"></script>
+
+<link media="screen" type="text/css" rel="stylesheet" href="./爱你们每一个人-只为讨口饭_files/pagephotoshow.min.css"><script type="text/javascript" src="./爱你们每一个人-只为讨口饭_files/pagephotoshow.min.js.下载"></script><script type="text/javascript">P('loft.w.g').initPagePhotoShow(document.body,{});</script>
+<script type="text/javascript">window.pagewidget=true;</script>
+
+
+<script type="text/javascript">window.postData = {}; window.postData.newVersionAuditing = false; window.postData.allowView = 0; window.postData.valid = 0</script>
+<script>window.Theme = {'ImageProtected':false,'CcType':1,ContextValue:'&copy;&nbsp;只为讨口饭'};</script>
+<script src="./爱你们每一个人-只为讨口饭_files/themecommon.js.下载" type="text/javascript"></script>
+<script>var _gaq = _gaq || [];_gaq.push(['_setAccount', 'UA-31007899-1'],['_setLocalGifPath', '/UA-31007899-1/__utm.gif'],['_setLocalRemoteServerMode']);_gaq.push(['_setDomainName', 'lofter.com']);_gaq.push(['_trackPageview']);(function() { var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; ga.src = 'https://wr.da.netease.com/ga.js'; var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); })();</script>
+
+
+</body></html>
